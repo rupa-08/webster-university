@@ -1,0 +1,72 @@
+---
+title: "Example_2 Logistic Regression"
+author: "Singh"
+
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Heart Data Logistic Regression
+```{r}
+library(readxl)
+heartdat <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week6/logistic regression/HeartDisease.xlsx")
+View(heartdat)
+head(heartdat)
+
+
+```
+
+## Coefficients -Dichotomous Predictor (x3)
+
+```{r}
+library(api2lm)
+library(aod)
+attach(heartdat)
+
+crosstab <- table(HeartDisease, x3)
+crosstab
+
+output_2 <- glm(HeartDisease~x3,family=binomial, heartdat)
+summary(output_2)
+
+##confidence Interval
+confint.default(output_2)
+
+##odds ratio
+exp(coef(output_2))
+
+## odds ratios and 95% CI
+exp(cbind(OR = coef(output_2), confint(output_2)))
+
+
+
+```
+
+## ## Coefficients -one continuous and one Dichotomous Predictor (x3)
+```{r}
+library(api2lm)
+library(aod)
+library(vtable)
+
+summstat <- st(heartdat, group="x3")
+summstat
+
+output_1 <- glm(HeartDisease~x3+x1,family=binomial, heartdat)
+summary(output_1)
+
+##confidence Interval
+confint.default(output_1)
+
+##odds ratio
+exp(coef(output_1))
+
+## odds ratios and 95% CI
+exp(cbind(OR = coef(output_1), confint(output_1)))
+
+```
+

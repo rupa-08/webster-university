@@ -1,0 +1,132 @@
+---
+title: "Week_7"
+author: "Rupa Shrestha"
+date: "2024-10-09"
+output:
+  word_document: default
+  html_document: default
+Week-7: Assignment
+---
+
+```{r}
+library(ggplot2)
+
+# Data
+data <- data.frame(
+  Y = c(0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0),
+  X1 = c(32, 45, 60, 53, 25, 68, 82, 38, 67, 92, 72, 21, 26, 40, 33, 45, 61, 16, 18, 22, 27, 35, 40, 10, 24, 15, 23, 19, 22, 61, 21, 32, 17),
+  X2 = c(3, 2, 2, 1, 4, 1, 2, 5, 2, 2, 3, 5, 3, 4, 3, 1, 2, 3, 4, 6, 3, 3, 3, 4, 3, 4, 3, 5, 2, 2, 3, 5, 1)
+)
+
+```
+```{r}
+# Fit the logistic regression model
+
+logistic_model <-glm(Y ~ X1+X2, data = data, family =  binomial)
+summary(logistic_model)
+```
+
+
+```{r}
+#ii) Interpret the odd ratios of two estimates of coefficients
+odd_ratios <- exp(coef(logistic_model))
+print(odd_ratios)
+```
+The intercept in a logistic regression model represents the log-odds of the outcome when all predictor variables are equal to zero. While the intercept itself is not typically interpreted in terms of odds ratios, it indicates the baseline log-odds of not purchasing a car when both income and age are zero (which may not be practically relevant).
+
+The odds ratio for X1 (annual family income) is calculated as e^1.070079093≈2.91. This means that for each additional thousand dollars in family income, the odds of purchasing a new car increase by approximately 91% (since 2.91−1=1.91). In other words, higher income significantly increases the likelihood that a family will purchase a new car.
+
+The odds ratio for X2 (age of the oldest car) is calculated as e ^1.819627221 ≈6.13. This indicates that for each additional year of the oldest car's age, the odds of purchasing a new car increase by approximately 513% (since 6.13−1=5.13). This suggests that families with older cars are significantly more likely to purchase a new car, possibly due to the need for replacement.
+
+```{r}
+#iii) Perform influential diagnostics and identify any influential data points.
+
+cooks_distance <- cooks.distance(logistic_model)
+
+#plotting cook's distance
+plot(cooks_distance, type="h", main="Cook's Distance", ylab = "Cook Distance")
+abline(h=4/(nrow(data)-length(coef(logistic_model))), col="red")
+
+#identifying influential points
+influential <- as.numeric(names(cooks_distance)[cooks_distance > (4/nrow(data)-length(coef(logistic_model)))])
+
+influential
+```
+The data points around index 5, 15 and 25 seems to have high cook distance which shows these are influential data points.
+```{r}
+#iv) Perform the goodness of fit test.
+library(ResourceSelection)
+hoslem_test <- hoslem.test(logistic_model$y, fitted(logistic_model), g=10)
+print(hoslem_test)
+```
+```{r}
+#v) Obtain confusion matrix, AUC and ROC curve. Interpret the findings.
+library(pROC)
+library(caret)
+
+#predicting probabilities
+predicted_probabilities <- predict(logistic_model, type = "response")
+#confusion matrix
+predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
+
+confusion_matrix <- confusionMatrix(as.factor(predicted_classes), as.factor(data$Y))
+print(confusion_matrix)
+
+# AUC and ROC Curve
+roc_curve <- roc(data$Y, predicted_probabilities)
+auc_value <- auc(roc_curve)
+plot(roc_curve, main = "ROC Curve for Logistic Regression")
+print(auc_value)
+```
+McNemar's Test P-Value: 0.72367 suggests no significant difference in the proportions of predicted and actual classifications.
+
+Sensitivity: 0.8421 shows that the model correctly identifies 84.21% of actual positive cases.
+
+Specificity: 0.6429 indicates that 64.29% of actual negative cases are correctly identified.
+
+Positive Predictive Value (Precision): 0.7619 means that 76.19% of predicted positive cases are true positives.
+
+Negative Predictive Value: 0.7500 indicates that 75% of predicted negative cases are true negatives.
+
+Prevalence: 0.5758 shows that 57.58% of the cases in the dataset are positive.
+
+Detection Rate: 0.4848 indicates that 48.48% of all samples were correctly identified as positive.
+
+Detection Prevalence: 0.6364 means that 63.64% of the samples were predicted as positive.
+
+Balanced Accuracy: 0.7425 suggests a reasonable performance in distinguishing between classes.
+
+Area Under the Curve (AUC): 0.7575 indicates good model performance in distinguishing between the positive and negative classes.
+
+Conclusion
+Overall, the model demonstrates a solid ability to identify families that will not purchase a new car, as evidenced by high sensitivity and a good AUC value. However, there is room for improvement in specificity and precision, indicating that while the model is effective at identifying positives, it may misclassify some negatives. The moderate Kappa value suggests that while the model performs better than chance, further refinement could enhance its predictive accuracy.
+
+From the ROC curve we can see that the curve shows upward trend which indicates thast the model performs better then random guess.
+```{r}
+
+#vi) Use random forest method to predict Y. Compare its confusion matrix, AUC and ROC curve with that of logistic regression model.
+
+library(randomForest)
+
+# Fit random forest model
+rf_model <- randomForest(as.factor(Y) ~ X1 + X2, data = data, ntree = 100)
+
+# Predict using random forest
+rf_predicted_probs <- predict(rf_model, type = "prob")[,2]
+rf_predicted_classes <- predict(rf_model)
+
+# Confusion matrix for random forest
+confusionMatrix(rf_predicted_classes, as.factor(data$Y))
+
+# ROC curve and AUC for random forest
+rf_roc_curve <- roc(data$Y, rf_predicted_probs)
+plot(rf_roc_curve, main = "ROC Curve for Random Forest")
+rf_auc_value <- auc(rf_roc_curve)
+
+cat("Logistic Regression AUC: ", auc_value, "\n")
+cat("Random Forest AUC: ", rf_auc_value, "\n")
+```
+Logistic regression performs better than random forest model in this particular dataset as indicated by the higher AUC value. This suggest that logistic regression is more suitable for predicating whether a family will purchase a new car based on the the annual family income and age of the oldest car. 
+
+The performance difference could be due to several factors like: nature of dataset, or number of features or the complexity of the relationships between the features and the target variable.
+

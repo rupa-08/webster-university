@@ -1,0 +1,172 @@
+---
+title: "R Week-2"
+output: html_document
+date: "2024-09-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# Question 2: Which (if any) of the following variable’s names is/are invalid?
+#thisone <- 1
+#THISONE <- 2
+#1This <- 3
+#this.one <- 4
+#This.1 <- 5
+#ThIS.....ON...E <- 6
+#This!On!e <- 7
+#lkjasdfkjsdf <- 8
+
+#Invalid Variables are: 3(1This <- 3) and 7(This!On!e <- 7)
+
+```
+```{r}
+# Question 3: 2021 was a good year for the price of Gold – your investment portfolio made $100,800 from investing in gold. Create a variable called gold.in.2021 and assign the value of your investment portfolio to it.
+
+gold.in.2021 <- 100800
+
+```
+```{r}
+#Question 4: During the last bank audit, we discovered that there was an error caused by a system calculation error and $5000 per year wasn’t added to your gold investment portfolio for the years 2018, 2019, and 2020. Create a new variable called calcError and assign it the amount miscalculated by the system. Create another variable called corrected.total and add the variables gold.in.2021 and calcError to this new variable. What is the new total amount?
+
+calError = 5000
+corrected.total = calError + gold.in.2021
+
+print(paste("The new total Value is: ", corrected.total))
+```
+```{r}
+#Question 5: . Create a variable called numberVector1 and numberVector2. Using the c(), assign a vector of numbers, 1 through 15 to each vector. Use a different method of creating the vector for each variable. (Hint: this was covered in your reading of chapter 4)Use the appropriate function to check the length of each of the vector variables you created above
+numberVector1 <- c(1:15)
+numberVector2 <- seq(1,15)
+
+print(length(numberVector1))
+print(length(numberVector2))
+
+```
+```{r}
+#Question 6: Using the two vector variables created above, add them together and assign the total to a variable called totalVectors. 
+
+totalVectors = numberVector1 + numberVector2
+totalVectors
+```
+```{r}
+#Question 7: Use the appropriate function to sum the totalVectors variable to display the sum of the totalVectors variable.
+sum(totalVectors)
+```
+```{r}
+#Question 8: Joanne thinks that she completes more tasks when she’s had a cup of coffee than when she doesn’t.To test this, she recorded how many tasks she completed over 7 days without drinking any coffee, and then did the same over 7 days while drinking coffee. Her results are stored in a comma delimited CSV file called Joannes Tasks
+#a. Import the comma delimited CSV file into R and assign the data to a variable called joanneTasks
+#b. Verify the variable holding the data is a data.frame variable
+#c. Using the appropriate function, write the code to verify that there are 7 rows and 4 columns in the data frame.
+
+
+joanneTasks = read.csv("C:/R/Week-2/Joannes Tasks.csv")
+print(data.frame(joanneTasks))
+dim(joanneTasks)
+
+```
+```{r}
+#Question 9: Use the appropriate function that will display summary descriptive statistics about each column within the data frame.
+#a. In your code, create comments about information you deduced from the summary descriptive statistics.
+
+summary(joanneTasks)
+```
+
+```{r}
+#. Using the appropriate syntax write the code that allows you to access the column that contains the Number of Tasks Completed Without Coffee data.
+#a. Use the appropriate function to display the mean value of that column.
+#b. Use the appropriate function to display the total of the values in the column.
+
+without_coffee <- (joanneTasks$Number.of.Tasks.Without.Coffee)
+without_coffee
+
+mean_val <- mean(joanneTasks$Number.of.Tasks.Without.Coffee, na.rm = TRUE)
+sum_val <- sum(joanneTasks$Number.of.Tasks.Without.Coffee, na.rm = TRUE)
+
+mean_val
+sum_val
+```
+```{r}
+#Question 11:
+# Using the appropriate syntax write the code that allows you to access the column that contains the Number of Tasks Completed With Coffee data.
+#a. Use the appropriate function to display the mean value of that column.
+#b. Use the appropriate function to display the total of the values in the column.
+
+with_coffee <- (joanneTasks$Number.of.Tasks.With.Coffee)
+with_coffee
+
+with_coffee_task_mean = mean(joanneTasks$Number.of.Tasks.With.Coffee, na.rm = TRUE)
+with_coffee_task_sum = sum(joanneTasks$Number.of.Tasks.With.Coffee, na.rm = TRUE)
+
+with_coffee_task_mean
+with_coffee_task_sum
+```
+```{r}
+#Write a function that will display the question below and return the correct answer.
+#a. Was Joanne able to complete more tasks when she drank coffee or days when she did not drink coffee?
+
+compare_tasks <- function(task){
+  
+  if(is.data.frame(task)){
+    if(task$Number.of.Tasks.With.Coffee && task$Number.of.Tasks.Without.Coffee){
+    total_task_with_coffee <- sum(task$Number.of.Tasks.With.Coffee, na.rm = TRUE)
+    total_task_without_coffee <- sum(task$Number.of.Tasks.Without.Coffee, na.rm = TRUE)
+    
+    if(total_task_without_coffee > total_task_with_coffee){
+      return("Joanne was able to complete more task without coffee than by drinking coffee.")
+    } else if(total_task_without_coffee < total_task_with_coffee){
+      return("Joanne was able to complete less task without coffee than by drinking coffee.")
+    } else {
+      return("Joanne was able to complete same number of task with or without coffee.")
+    }
+  }
+  else{
+    return("Please provide the data.")
+  }
+  }
+}
+result <- compare_tasks(joanneTasks)
+result
+```
+
+```{r}
+##14. Select two quantitative variables (from Taxes, Price, Size, and Lot)
+##a. Draw histogram for the two selected quantitative variables.
+##b. Draw the density plot for the two selected quantitative variables.
+```
+
+```{r}
+##15. Select the categorical variable Quadrant.
+##a. Draw Pareto chart.
+
+```
+
+ 
+```{r}
+##16. For both the quantitative variables used in question 14.
+##a. Determine the mean and median.
+##b. Compute the standard deviation of both variables.
+##c. Compute five number summary for both the variables.
+##d. Draw boxplots.
+
+
+```
+
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

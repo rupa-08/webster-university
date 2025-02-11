@@ -1,0 +1,95 @@
+---
+title: "Week 7 Time Series Data Analysis"
+output: word_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Read Data
+```{r}
+Data_IBM_monthly <- read.csv("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week7/Ch2_Data_IBM_monthly.txt", sep="")
+View(Data_IBM_monthly)
+head(Data_IBM_monthly)
+sibm=Data_IBM_monthly [ ,2]
+vw=Data_IBM_monthly [ ,3]
+libm = log(sibm+1)
+
+
+
+```
+
+
+## Time Series plot
+
+```{r}
+s1=ts(sibm, frequency=12, start =c(1926,1))
+plot(s1)
+
+s2=ts(libm, frequency=12, start =c(1926,1))
+plot(s2)
+
+s3=ts(vw, frequency=12, start =c(1926,1))
+plot(s3)
+
+```
+## ACF plot
+```{r}
+
+acf(s1, lag=24)
+acf(s2, lag=24)
+acf(s3, lag=24)
+
+```
+##plot without timwseries object
+```{r}
+plot(sibm)
+plot(libm)
+plot(vw)
+
+```
+## fit model
+```{r}
+
+library(forecast)
+m1 <- auto.arima(x=sibm)
+m1
+m2 <- auto.arima(x=libm)
+m2
+m3 <- auto.arima(x=vw)
+m3
+
+```
+## Residual Analysis
+If model fit is good then ACF plots should be white noise (no autocorrelation)
+```{r}
+
+acf(m1$residuals)
+acf(m2$residuals)
+acf(m3$residuals)
+
+```
+
+## Prediction
+```{r}
+
+predict(m1, n.ahead=5, se.fit=TRUE)
+predict(m2, n.ahead=5, se.fit=TRUE)
+predict(m3, n.ahead=5, se.fit=TRUE)
+
+
+```
+## Visualize Forecast
+```{r}
+Forecast_m1 <- forecast(object = m1, h=5)
+plot(Forecast_m1)
+
+Forecast_m2 <- forecast(object = m2, h=5)
+plot(Forecast_m2)
+
+Forecast_m3 <- forecast(object = m3, h=5)
+plot(Forecast_m3)
+
+```

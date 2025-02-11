@@ -1,0 +1,185 @@
+---
+title: "Example 3 Goodness of Fit Measures Logistic Regression"
+author: "Singh"
+
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Read the Example 3 data
+```{r}
+library(readxl)
+uisdat <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week6/logistic regression/UMARU.xlsx")
+View(uisdat)
+head(uisdat)
+```
+
+##  Deviance as a Goodness-of-Fit for Logistic Regression
+
+```{r}
+library(api2lm)
+library(aod)
+library(MASS)
+intercept_Model <- glm(DFREE~ 1, family=binomial, uisdat)
+full_model <- glm(DFREE~ Age+BECK+IVHX+NDRUGTX+Race+Treat+Site, family=binomial, uisdat)
+summary(full_model)
+
+pchisq(full_model$deviance,full_model$df.residual,lower=FALSE)
+
+anova(full_model,test="Chisq")
+
+
+
+
+```
+##Using the difference in deviance and associated p-value
+```{r}
+library(api2lm)
+library(aod)
+library(MASS)
+
+intercept_Model <- glm(DFREE~ 1, family=binomial, uisdat)
+full_model <- glm(DFREE~ Age+BECK+IVHX+NDRUGTX+Race+Treat+Site, family=binomial, uisdat)
+
+full_model$null.deviance-full_model$deviance
+pchisq(full_model$null.deviance-full_model$deviance,7,lower=FALSE)
+
+anova(intercept_Model, full_model, test = "LRT")
+```
+##Pearson Goodness of Fit Measure
+```{r}
+print(paste("Pearson's X^2 =",round(sum(residuals(full_model,type="pearson")^2),3)))
+1-pchisq(579.198, df=567)
+```
+
+##Hosmer-Lemeshow Tests
+
+```{r}
+library(ResourceSelection)
+library(PredictABEL)
+library(performance)
+
+uisdat <- as.data.frame(uisdat)
+lm1 <- hoslem.test(uisdat$DFREE, fitted(full_model), g = 10)
+lm1
+lm2 <- performance_hosmer(full_model, n_bins = 10)
+lm2
+
+
+plotCalibration(data = uisdat, cOutcome =9 , predRisk = fitted(full_model), groups= 10)
+
+```
+
+
+
+## classification
+
+```{r}
+
+library(ResourceSelection)
+library(PredictABEL)
+library(performance)
+library(dplyr)
+library(stargazer)
+library(caret)
+library(pROC)
+
+uisdat$prob_fitted <- predict(full_model,uisdat, type="response")
+
+pred_class <- ifelse(uisdat$prob_fitted > 0.5, "1", "0")
+observed_class <- uisdat$DFREE
+mean(pred_class ==observed_class)
+class_fitted <- cbind(observed_class, pred_class)
+pred_tab <- table(observed_class, pred_class)
+
+confusionMatrix(pred_tab)
+
+
+```
+## ROC curve
+```{r}
+library(dplyr)
+library(stargazer)
+library(caret)
+library(pROC)
+library(ggplot2)
+library(ResourceSelection)
+library(PredictABEL)
+library(performance)
+
+roc1 <- roc(uisdat$DFREE, uisdat$prob_fitted)
+roc1
+plot(roc1, main="ROC Curve ....Logistic Regression")
+
+ysense <- roc1$sensitivities
+xspec <- roc1$specificities
+rocdat <- cbind(ysense, xspec)
+rocdat <- as.data.frame(rocdat)
+
+ggplot(rocdat, aes(x =(1-xspec), y =ysense)) +geom_line() 
+
+
+
+
+
+```
+## Random Forest
+```{r}
+library(randomForest)
+set.seed(101)
+uisdat$DFREE <- as.factor(uisdat$DFREE)
+rf1<-randomForest(DFREE~ Age+BECK+IVHX+NDRUGTX+Race+Treat+Site,data= uisdat, importance=TRUE, ntree=500)
+print(rf1)
+#Evaluate variable importance
+importance(rf1)
+varImpPlot(rf1)
+
+```
+## Prediction using Random Forest
+```{r}
+library(ROCR)
+pred1 <- predict(rf1)
+pred1
+
+
+
+
+
+
+```
+
+## Cross_Classification
+```{r}
+table(pred1, uisdat$DFREE)
+```
+
+
+## Prediction
+
+```{r}
+predictions <- predict(rf1, type="prob")
+pred <- prediction(predictions[,2], uisdat$DFREE)
+perf <- performance(pred, measure ="tpr", x.measure ="fpr")
+plot(perf)
+
+```
+## Area under curve
+```{r}
+library(ROCR)
+auc <- performance(pred, measure = "auc")
+print(auc@y.values)
+
+```
+
+## Plot the ROC curve
+```{r}
+
+plot(perf,main="ROC Curve for Random Forest",col=2,lwd=2)
+abline(a=0,b=1,lwd=2,lty=2,col="gray")
+
+```

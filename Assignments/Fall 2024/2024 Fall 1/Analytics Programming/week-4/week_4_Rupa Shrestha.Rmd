@@ -1,0 +1,70 @@
+---
+title: "week_4"
+output:
+  word_document: default
+  html_document: default
+date: "2024-09-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Name: Rupa Shrestha
+## Student ID: 4266261
+## Week 4 assignment
+
+```{r}
+library(ggplot2)
+library(dplyr)  
+
+data(midwest)
+ohio_data <- midwest %>%
+  filter(state == "OH")
+
+# i.
+avg_college_ohio <- mean(ohio_data$percollege)
+
+# ii.
+avg_asian_ohio <- mean(ohio_data$percasian)
+print(paste("Average percentage of college educated in Ohio:", avg_college_ohio))
+print(paste("Average percentage of Asians in Ohio:", avg_asian_ohio))
+```
+## 1) B) solutoin
+```{r}
+state_averages <- midwest %>%
+  group_by(state) %>%
+  summarize(avg_college = mean(percollege),  
+            avg_asian = mean(percasian)) 
+print(state_averages)
+```
+## 2) A) Solution
+```{r}
+# Create two data frames based on the midwest dataset
+df1 <- midwest %>%
+  filter(state == "OH") %>%
+  select(county, state, poptotal)
+
+df2 <- midwest %>%
+  filter(state == "IN") %>%
+  select(county, state, popdensity)
+
+# Left Join
+left_join_result <- left_join(df1, df2, by = "county")
+left_join_result
+
+# Right Join
+right_join_result <- right_join(df1, df2, by = "county")
+right_join_result
+
+# Full Join
+full_join_result <- full_join(df1, df2, by = "county")
+full_join_result
+
+```
+## explanation:
+## left-join = Keeps all rows from df1 (Ohio counties), even if there's no match in df2 (Indiana counties).
+## right_join = Keeps all rows from df2 (Indiana counties), even if there's no match in df1.
+## full_join = Keeps all rows from both datasets, filling NA where there's no match.
+
+
+

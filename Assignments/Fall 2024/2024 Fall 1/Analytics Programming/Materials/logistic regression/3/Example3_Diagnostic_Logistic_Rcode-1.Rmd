@@ -1,0 +1,101 @@
+---
+title: "Example_3 Diagnostic Measures Logistic Regression"
+author: "Singh"
+
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Read the Example 3 data
+```{r}
+library(readxl)
+uisdat <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week6/logistic regression/UMARU.xlsx")
+View(uisdat)
+head(uisdat)
+```
+
+##  Residuals for Logistic Regression
+
+```{r}
+library(api2lm)
+library(aod)
+library(MASS)
+intercept_Model <- glm(DFREE~ 1, family=binomial, uisdat)
+full_model <- glm(DFREE~ Age+BECK+IVHX+NDRUGTX+Race+Treat+Site, family=binomial, uisdat)
+summary(full_model)
+
+res_pearson <- residuals(full_model, type ="pearson")
+res_deviance <- residuals(full_model, type ="deviance")
+head(res_pearson, 10)
+head(res_deviance, 10)
+
+
+
+```
+##studentized residuals, Hat, Dfbeta, dffit, cooks D Plots
+```{r}
+library(api2lm)
+library(aod)
+library(MASS)
+library(car)
+
+intercept_Model <- glm(DFREE~ 1, family=binomial, uisdat)
+full_model <- glm(DFREE~ Age+BECK+IVHX+NDRUGTX+Race+Treat+Site, family=binomial, uisdat)
+
+plot(full_model)
+plot(full_model, which=4)
+
+marginalModelPlots(full_model)
+```
+##studentized residuals, Hat, Dfbeta, dffit, cooks D
+```{r}
+library(api2lm)
+library(aod)
+library(MASS)
+library(car)
+
+intercept_Model <- glm(DFREE~ 1, family=binomial, uisdat)
+full_model <- glm(DFREE~ Age+BECK+IVHX+NDRUGTX+Race+Treat+Site, family=binomial, uisdat)
+
+inf_dfb <- dfbeta(full_model)
+inf_dffit <- dffits(full_model)
+inf_cook <- cooks.distance(full_model)
+inf_hat <- hatvalues(full_model)
+inf_stud <- studres(full_model)
+inf_stats <- cbind(inf_dfb, inf_dffit, inf_cook, inf_hat, inf_stud)
+head(inf_stats, 10)
+influence_stats(full_model)
+
+```
+
+## Influence Tests
+
+```{r}
+library(api2lm)
+library(aod)
+library(MASS)
+library(car)
+library(DescTools)
+
+intercept_Model <- glm(DFREE~ 1, family=binomial, uisdat)
+full_model <- glm(DFREE~ Age+BECK+IVHX+NDRUGTX+Race+Treat+Site, family=binomial, uisdat)
+
+residualPlots(full_model)
+
+influenceIndexPlot(full_model)
+
+outlierTest(full_model)
+
+
+influencePlot(full_model)
+
+PseudoR2(full_model)
+VIF(full_model)
+
+
+```

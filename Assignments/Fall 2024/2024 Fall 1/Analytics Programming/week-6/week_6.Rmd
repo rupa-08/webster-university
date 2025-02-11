@@ -1,0 +1,136 @@
+---
+title: "week_6"
+author: "Rupa Shrestha"
+date: "2024-09-27"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r}
+library(readxl)
+data_set <- read_excel("D:/Webster University/Assignments/Analytics Programming/week-6/Data_HW6.xlsx")
+data_set
+```
+Creatinine clearance (Y) is an important measure of kidney function, but is difficult to obtain in a clinical office setting because it requires 24-hour urine collection. To determine whether this measure can be predicted from some data that are easily available, a kidney specialist obtained the data from 33 male subjects. The predictor variables are serum creatinine concentration (X1), age (X2 ), and weight (X3).
+
+a. Obtain the scatter plot matrix and the correlation matrix. What do the scatter plots suggest about the nature of the functional relationship between the response variable Y and each predictor variable?
+```{r}
+library(ggplot2)
+# Scatter plot matrix
+pairs(data_set, main = "Scatterplot Matrix")
+
+# Correlation matrix
+cor(data_set)
+```
+```{r}
+# Y vs. X1:The scatter plot shows a positive linear relationship between Y and X1. As X1 increases, Y tends to increase as well. The points seem to cluster around a straight line.
+
+#Y vs. X2:The scatter plot shows a positive linear relationship between Y and X2. As X2 increases, Y tends to increase as well. The points also seem to cluster around a straight line, but the relationship might not be as strong as the one between Y and X1.
+```
+
+b. Fit the regression model to the data. State the estimated regression function. 
+```{r}
+# Fit the regression model
+model <- lm(clearance ~ concentration + age + weight, data = data_set)
+
+summary(model)
+
+coef(model)
+```
+c. Does it appear that all predictor variables should be retained?
+```{r}
+# All three predictors have p-values well below the common significance level of 0.05, indicating that they are all statistically significant and should be retained.
+
+#The Adjusted R² value is relatively high, indicating that the model explains a good proportion of the variance in clearance. 
+
+#The VIF values indicate no multicollinearity.
+
+#The Adjusted R² value suggests a strong model fit.
+
+#Therefore, We should retain all three predictor variables in your regression model.
+```
+d. Using first-order and second-order terms for each of the three predictor variables in the pool of potential X variables (including cross products of the first-order terms), find the three best subset regression models according to the Cp criterion.
+```{r}
+#********************
+library(leaps)
+# Best subset regression
+best_subset <- regsubsets(clearance ~ concentration + age + weight + I(concentration^2) + I(age^2) + I(weight^2) + concentration:age + concentration:weight + age:weight, data = data_set)
+summary(best_subset)$cp
+```
+e. Is there much difference in Cp for the three best subset models?
+```{r}
+#The three best subset models all have relatively low Cp values, with the lowest being 3.302215, followed closely by 3.384990 and 4.587063. Since these values are quite close to each other, it indicates that there isn’t a significant difference in their fit to the data. Essentially, all three models should perform similarly in terms of predictive power.The model with the lowest Cp (3.302215) is the best, but the others are also very competitive.
+```
+f. Using the same pool of potential X variables as in part(d), find the best subset of variables according to forward stepwise regression.
+```{r}
+# Forward stepwise regression
+forward_model <- step(lm(clearance ~ 1, data = data_set), scope = ~ concentration + age + weight + I(concentration^2) + I(age^2) + I(weight^2) + concentration:age + concentration:weight + age:weight, direction = "forward")
+
+summary(forward_model)
+```
+g. Using the same pool of potential X variables as in part(d), find the best subset of variables according to backward elimination regression.
+```{r}
+# Backward elimination regression
+backward_model <- step(lm(clearance ~ concentration + age + weight + I(concentration^2) + I(age^2) + I(weight^2) + concentration:age + concentration:weight + age:weight, data = data_set), direction = "backward")
+
+summary(backward_model)
+```
+h. How does the best subset according to these three methods compare with respect to Cp and adjusted R2 ?
+```{r}
+#The three best subset models have very low Cp values, suggesting that they are close to the ideal model with minimal bias and variance. The lowest Cp value (3.302215) indicates the best fit, and this model would likely have a high adjusted R².
+
+#In forward stepwise regression, adjusted R² is 0.8668, which is quite high, indicating that this model explains a significant proportion of the variance in the clearance variable.The Cp value was not directly calculated, but the model’s AIC suggests it performs well.
+
+#In backward stepwise regression, adjusted R² is 0.8598, slightly lower than the forward stepwise model, but still very high. The Cp value is also not directly available, but the AIC (167.46) is competitive.
+```
+i. Obtain the studentized delete residuals and identify any outlying Y observations. Use the Bonferroni outlier test procedure with α = .01. 
+```{r}
+# Set the threshold for the Bonferroni correction
+
+# Get the studentized deleted residuals
+library(MASS)
+stud_res <- studres(model)
+
+n <- nrow(data_set)  # Number of observations
+alpha <- 0.01
+bonferroni_threshold <- qt(1 - alpha / (2 * n), df = n - length(coef(model)) - 1)  # Two-sided test
+
+# Identify outliers
+outliers <- which(abs(stud_res) > bonferroni_threshold)
+
+# Print the studentized deleted residuals and the outliers
+stud_res
+outliers
+```
+j. Obtain the DFFITS, DFBETAS, and Cook's distance values for each case to assess its influence. What do you conclude?
+```{r}
+# Influence diagnostics
+dffits_values <- dffits(model)
+dfbetas_values <- dfbetas(model)
+cooks_distance <- cooks.distance(model)
+
+dffits_values
+dfbetas_values
+cooks_distance
+```
+
+```{r}
+#From the observation 16 has a DFFITS value of 0.821, which is higher than most others and is quite close to 1, indicating this observation might have significant influence. Observations like 12 and 21 also have relatively high DFFITS values.
+
+#Based on the DFBETAS values, observations 16, 20, and 21 have notably large values for certain predictors, suggesting that they are influential on the coefficients of the model.
+
+#From the observation, 26 has a Cook’s distance value of 0.35, which is relatively high compared to others, but still below the typical threshold of 1. However, it should still be monitored, as it could have potential influence.
+```
+
+k. Calculate Cook's distance D for each case and prepare an index plot. Are any cases influential according to this measure'?
+```{r}
+# Index plots for Cook's distance
+plot(cooks_distance, main = "Cook's Distance", ylab = "Distance", xlab = "Index")
+abline(h = 4 / length(cooks_distance), col = "red")
+
+```
+```{r}
+#Based on the Cook's distance values, no observations have a Cook's D greater than 1, meaning there are no extremely influential cases in the model according to this measure.
+```
+

@@ -1,0 +1,116 @@
+---
+title: "Week_3_Rupa_Shrestha"
+output:
+  word_document: default
+  html_document: default
+date: "2024-09-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+#Name: Rupa Shrestha
+#ID: 4266261
+#Week3 Assignment
+```
+
+##Read the data and display the first and last six rows of the data.
+```{r}
+library(readxl)
+
+housing_data=read_excel("D:/Webster University/Assignments/Analytics Programming/Week-3/house_selling_prices_FL.xlsx")
+
+head(housing_data)
+tail(housing_data)
+```
+##Rename ALL columns with FOUR letter words.
+```{r}
+library(stringr)
+
+rename_four_letters_columns <- function(df) {
+  column_names <- colnames(df)
+  new_names <- sapply(column_names, function(name) {
+    if (nchar(name) > 4) {
+      paste0(str_sub(name, 1, 4))
+    } else if (nchar(name) < 4) {
+      paste0(str_pad(name, 4, side = "right", pad = "1"))
+    } else {
+      name
+    }
+  })
+  colnames(df) <- new_names
+  return(df)
+}
+
+df <- rename_four_letters_columns(housing_data)
+
+colnames(df)
+  
+```
+## Use the str() function to view the column names and data types for the table.
+```{r}
+str(df)
+```
+##Check the ‘type of ‘ variables Bedrooms and Baths. If they are not character, convert them to character
+```{r}
+class(housing_data$Bedrooms)
+class(housing_data$Baths)
+
+housing_data$Bedrooms <- as.character(housing_data$Bedrooms)
+housing_data$Baths <- as.character(housing_data$Baths)
+
+class(housing_data$Bedrooms)
+class(housing_data$Baths)
+```
+##Display the value counts for Quadrant.
+```{r}
+value_count <- table(housing_data$Quadrant)
+print(value_count)
+```
+## Add a column named PercentTax that contains the percentage of Tax out of the total price of the house.
+```{r}
+housing_data$PercentTax <- (housing_data$Taxes / housing_data$price) * 100
+print(housing_data$PercentTax)
+print(housing_data)
+```
+## Add a column named PercentSize that contains the percentage of house size out of the total lot size of the house.
+```{r}
+housing_data$PercentSize = (housing_data$size/housing_data$lot) * 100
+print(housing_data$PercentSize)
+print(housing_data)
+
+```
+## Use the apply() function to display the total PercentTax and total PercentSize.
+```{r}
+percent_size_matrix <- as.matrix(housing_data['PercentSize'])
+percent_size_sum <- apply(percent_size_matrix,2,sum)
+
+percent_tax_matrix <- as.matrix(housing_data['PercentTax'])
+percent_tax_sum <- apply(percent_tax_matrix,2,sum)
+
+print(percent_size_sum)
+print(percent_tax_sum)
+```
+#. Group and summarize the data that includes newly added columns.
+```{r}
+library(dplyr)
+summary_data <- housing_data %>% 
+  group_by(Bedrooms) %>% 
+  summarize(
+    Total_Price = sum(price),
+    Average_Percent_Tax=mean(PercentTax),
+    Average_Percent_Size=mean(PercentSize), 
+    .groups="drop"
+    )
+
+print(summary_data)
+```
+## Filter the data so that it only includes 3-Bedroom houses.
+```{r}
+filtered_housing_data = housing_data[housing_data$Bedrooms == 3,]
+print(filtered_housing_data)
+```
+
+
+

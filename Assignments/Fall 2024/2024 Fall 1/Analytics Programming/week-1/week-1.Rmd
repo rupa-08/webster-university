@@ -1,0 +1,84 @@
+---
+title: "Untitled"
+output:
+  word_document: default
+  html_document: default
+date: "2024-08-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+#Solution 1: creating numeric, character, logical and date data type
+numeric_variable <- 11
+char_variable <- 'a'
+logical_variable <- TRUE
+as.Date('2024-08-11')->date_variable
+
+#validating the data type
+print(paste("First data is", class(numeric_variable), "type."))
+print(paste("Second data is", class(char_variable), "type."))
+print(paste("Third data is", class(logical_variable), "type."))
+print(paste("Fourth data is", class(date_variable), "type."))
+```
+
+
+```{r}
+#Solution 2: vector of the names of the days of the week.
+monthsOfYEAR <- c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")
+
+print(monthsOfYEAR)
+```
+```{r}
+#Solution 3: vector of numbers that ranges from 200 to 220
+dataVec1 <- 200:220
+print(paste("Vector of number from 200 to 220 is: ",dataVec1))
+```
+```{r}
+# Solution 4: Vecotr of numbers that ranges from 40 to 60
+dataVec2 <- seq(from = 40, to = 60, by = 1)
+print(dataVec2)
+```
+```{r}
+# Solution 5: adding two vector
+dataCombVec1 <- c(dataVec1, dataVec2)
+print( dataCombVec1)
+```
+```{r}
+# Solution 6: multiplying two vector
+datacombVec2 <- dataVec1 * dataVec2
+print(datacombVec2)
+```
+```{r}
+#Solution 7
+# NULL -> it represents the absence of value or missing value
+#NA -> means undefined data within the data. You can remove NA using `NA.rm` to use sum command
+
+```
+```{r}
+# Solution 8: code that will install dplyr package in RStudio
+#install.packages("dplyr")
+#library(dplyr)
+
+```
+
+
+```{r}
+packageVersion('dplyr')
+```
+
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+

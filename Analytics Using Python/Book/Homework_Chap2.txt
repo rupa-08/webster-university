@@ -1,0 +1,29 @@
+Lets Practice Python !
+
+1. Add two numbers and print the result using print statement .
+2. Take a variable x . Assign a string value to x . Print the value of x using print statement .
+3. Create a List of names of students in your class .
+4. Create a Dictionary with Key1:'Adam', Key2:'Apple', Key3:[1,2,3]
+Access the 2nd element of Key3 
+
+
+Homework 
+
+Load the data from the file in a data frame
+Read the data in a Data Frame
+Refer to the .ipynb file for next steps
+
+
+
+
+
+
+
+Few Things to remember.... 
+
+1.This is a graded homework 
+2.Homework must be submitted by next week 01/27
+3.Do not copy or cheat . No points would be awarded in such case 
+
+
+

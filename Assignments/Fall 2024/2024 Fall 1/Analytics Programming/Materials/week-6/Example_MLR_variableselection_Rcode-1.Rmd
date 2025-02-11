@@ -1,0 +1,84 @@
+---
+title: "Example MLR Variable Selection"
+author: "Singh"
+
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Model Selection
+
+
+```{r }
+library(readxl)
+bridgedat <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week6/bridge.xlsx")
+View(bridgedat)
+head(bridgedat)
+```
+
+## MLR estimation
+
+
+```{r }
+library(api2lm)
+library(lmSubsets)
+library(olsrr)
+
+library(car)
+output1 <- lm(log(Time)~log(DArea)+log(CCost)+log(Dwgs)+log(Length)+log(Spans), bridgedat)
+summary(output1)
+cor(bridgedat)
+
+
+
+```
+## All subset regression
+
+```{r}
+library(lmSubsets)
+library(olsrr)
+
+output_all <- lmSubsets(log(Time)~log(DArea)+log(CCost)+log(Dwgs)+log(Length)+log(Spans), bridgedat, nbest=10)
+output_all
+summary(output_all)
+plot(output_all)
+
+
+
+```
+## select best model
+To discard the intercept, the call may be rewritten as follows:
+lmSubsets(log(Time)~. -1, bridgedat)
+lmSubsets(log(Time)~., include ="", bridgedat)
+lmSubsets(log(Time)~., exclude ="", bridgedat)
+lmSubsets(log(Time)~., include =c("",""). bridgedat)
+
+
+```{r}
+
+library(lmSubsets)
+library(olsrr)
+
+output_best <- lmSelect(log(Time)~log(DArea)+log(CCost)+log(Dwgs)+log(Length)+log(Spans), bridgedat, nbest=5)
+output_best
+summary(output_best)
+plot(output_best)
+
+```
+## select best model using a particular criterion
+
+```{r}
+library(lmSubsets)
+library(olsrr)
+
+output_best1 <- lmSelect(log(Time)~log(DArea)+log(CCost)+log(Dwgs)+log(Length)+log(Spans), bridgedat, penalty ="AIC", nbest=5)
+output_best1
+summary(output_best1)
+plot(output_best1)
+
+```

@@ -1,0 +1,31 @@
+---
+title: "R Markdown for Lecture 1 Example1"
+output: word_document
+date: "2024-08-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read Data
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(readxl)
+data_seatbelt <- read_excel("C:/Users/psingh/OneDrive - Southeast Missouri State University/Teaching/Fall2024/CSDA5110/Fall_01/Data/SeatBelt_data.xlsx")
+head(data_seatbelt)
+tail(data_seatbelt)
+
+```
+## Data Manipulation
+
+```{r}
+data_new1 <- data_seatbelt[,-11]
+head(data_new1)
+
+data_new2 <- data_seatbelt[,c(-3,-11)]
+head(data_new2)
+
+```

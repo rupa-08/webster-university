@@ -1,0 +1,246 @@
+---
+title: "Analytics Programming Week-2"
+output:
+  word_document: default
+  html_document: default
+date: "2024-08-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Name: Rupa Shrestha
+#Date: 30th August 2024
+#"CSDA 5110 Homework 2"
+```
+#Question 2: Which (if any) of the following variable’s names is/are invalid?
+```{r}
+thisone <- 1
+THISONE <- 2
+#1This <- 3   =INVALID
+this.one <- 4
+This.1 <- 5
+ThIS.....ON...E <- 6
+#This!On!e <- 7  =INVALID
+lkjasdfkjsdf <- 8
+
+#Invalid Variables are: 3(1This <- 3) and 7(This!On!e <- 7)
+```
+#Question 3: 2021 was a good year for the price of Gold – your investment portfolio made $100,800 from investing in gold. Create a variable called gold.in.2021 and assign the value of your investment portfolio to it.
+```{r}
+gold.in.2021 <- 100800
+gold.in.2021
+```
+#Question 4: During the last bank audit, we discovered that there was an error caused by a system calculation error and $5000 per year wasn’t added to your gold investment portfolio for the years 2018, 2019, and 2020. Create a new variable called calcError and assign it the amount miscalculated by the system. Create another variable called corrected.total and add the variables gold.in.2021 and calcError to this new variable. What is the new total amount?
+```{r}
+calError = 5000
+corrected.total = gold.in.2021 + calError
+
+print(paste("The new total Value is: ", corrected.total))
+```
+
+#Question 5: . Create a variable called numberVector1 and numberVector2. Using the c(), assign a vector of numbers, 1 through 15 to each vector. Use a different method of creating the vector for each variable. (Hint: this was covered in your reading of chapter 4)Use the appropriate function to check the length of each of the vector variables you created above
+```{r}
+numberVector1 <- c(1:15)
+numberVector2 <- seq(1,15)
+
+print(length(numberVector1))
+print(length(numberVector2))
+
+```
+#Question 6: Using the two vector variables created above, add them together and assign the total to a variable called totalVectors.
+```{r}
+totalVectors = numberVector1 + numberVector2
+print(totalVectors)
+```
+#Question 7: Use the appropriate function to sum the totalVectors variable to display the sum of the totalVectors variable.
+```{r}
+print(sum(totalVectors))
+```
+#Question 8: Joanne thinks that she completes more tasks when she’s had a cup of coffee than when she doesn’t.To test this, she recorded how many tasks she completed over 7 days without drinking any coffee, and then did the same over 7 days while drinking coffee. Her results are stored in a comma delimited CSV file called Joannes Tasks
+#a. Import the comma delimited CSV file into R and assign the data to a variable called joanneTasks
+#b. Verify the variable holding the data is a data.frame variable
+#c. Using the appropriate function, write the code to verify that there are 7 rows and 4 columns in the data frame.
+```{r}
+#A solution
+joanneTasks = read.csv("D:/Webster University/Assignments/Analytics Programming/Week-2/Joannes Tasks.csv")
+
+#B solution
+print(paste("The data is of type:",class(joanneTasks)))
+
+#C Solution
+print(paste("Number of rows",nrow(joanneTasks), "Number of columns", ncol(joanneTasks)))
+
+
+```
+#Question 9: Use the appropriate function that will display summary descriptive statistics about each column within the data frame.
+#a. In your code, create comments about information you deduced from the summary descriptive statistics.
+```{r}
+summary(joanneTasks)
+```
+```{r}
+# Summary for days of the week: Days of the week is character data type. Length of days of the week is 8.
+
+#Summary for the Number.of.Tasks.With.Coffee: Minimun task Joanne completed with coffee is 3 and maximum value is 10. The average value is 6.429 and median value is 6. The first quatile value with coffee is 5 and the third quartile value with coffee is 8. There is one NA value present.
+
+#Summary for the Number.of.Tasks.Without.Coffee: Minimun task Joanne completed without coffee is 5 and maximum value is 15. The average value is 7.714 and median value is 8. The first quatile value without coffee is 5 and the third quartile value without coffee is 8. There is one NA value present.
+
+#Total.Tasks: Minimun total task completed by Joanne is 8 and maximum value is 23. The average value is 14.14 and median value is 14. The first quatile value of total task is 10 and the third quartile value of total task is 13. There is one NA value present.
+```
+#.10 Using the appropriate syntax write the code that allows you to access the column that contains the Number of Tasks Completed Without Coffee data.
+#a. Use the appropriate function to display the mean value of that column.
+#b. Use the appropriate function to display the total of the values in the column.
+```{r}
+task.completed.without.coffee <- (joanneTasks$Number.of.Tasks.Without.Coffee)
+print(task.completed.without.coffee)
+
+#10 a Solution
+without_coffee_task_mean <- mean(task.completed.without.coffee, na.rm = TRUE)
+print(paste("mean",without_coffee_task_mean))
+
+#10 b Solution
+without_coffee_task_sum <- sum(task.completed.without.coffee, na.rm = TRUE)
+print(paste("sum",without_coffee_task_sum))
+```
+#Question 11:
+# Using the appropriate syntax write the code that allows you to access the column that contains the Number of Tasks Completed With Coffee data.
+#a. Use the appropriate function to display the mean value of that column.
+#b. Use the appropriate function to display the total of the values in the column.
+```{r}
+task.completed.with.coffee <- (joanneTasks$Number.of.Tasks.With.Coffee)
+print(task.completed.with.coffee)
+
+#11 a Solution
+with_coffee_task_mean = mean(task.completed.with.coffee, na.rm = TRUE)
+print(paste("Mean", with_coffee_task_mean))
+
+#11 b Solution
+with_coffee_task_sum = sum(task.completed.with.coffee, na.rm = TRUE)
+print(paste("Sum", with_coffee_task_sum))
+```
+#12 Using the appropriate syntax write the code that allows you to access the column that contains the Total Daily Tasks data. 
+#a. Use the appropriate function to display the mean value of that column.
+#b. Use the appropriate function to display the total of the values in the column.
+```{r}
+total.daily.tasks <- (joanneTasks$Total.Tasks)
+print(total.daily.tasks)
+
+#12 a Solution
+total.daily.tasks_mean = mean(total.daily.tasks, na.rm = TRUE)
+print(paste("Mean", total.daily.tasks_mean))
+
+#12 b Solution
+total.daily.tasks_sum = sum(total.daily.tasks, na.rm = TRUE)
+print(paste("Sum", total.daily.tasks_sum))
+
+```
+
+#13 Write a function that will display the question below and return the correct answer.
+#a. Was Joanne able to complete more tasks when she drank coffee or days when she did not drink coffee?
+```{r}
+compare_task_function <- function(task) {
+  if (without_coffee_task_sum > with_coffee_task_sum) {
+    return("Joanne was able to complete more tasks without coffee than with coffee.")
+  } else if (without_coffee_task_sum < with_coffee_task_sum) {
+    return("Joanne was able to complete more tasks with coffee than without coffee.")
+  } else {
+    return("Joanne completed the same number of tasks with or without coffee.")
+  }
+}
+
+print(compare_task_function(joanneTasks))
+
+```
+#14. Select two quantitative variables (from Taxes, Price, Size, and Lot)
+#a. Draw histogram for the two selected quantitative variables.
+#b. Draw the density plot for the two selected quantitative variables.
+```{r}
+library(ggplot2)
+library(readxl)
+
+housing_data <- read_excel("D:/Webster University/Assignments/Analytics Programming/Week-2/house_selling_prices_FL.xlsx")
+
+#Solution for 14 a
+
+ggplot(housing_data, aes(x=price)) +geom_histogram()+
+  ggtitle("Histogram of House Prices") +
+  xlab("Price") +
+  ylab("Frequency");
+
+ggplot(housing_data, aes(x=Taxes)) +geom_histogram()+
+  ggtitle("Histogram of House Taxes") + 
+  xlab("Taxes")+
+  ylab("Frequency");
+
+#Solution for 14 b
+
+ggplot(housing_data, aes(x=price)) +geom_density()+
+  ggtitle("Density plot of House price") +
+  xlab("Prices") +
+  ylab("Frequency");
+
+ggplot(housing_data, aes(x=Taxes)) +geom_density()+
+  ggtitle("Density plot of House Taxes") +
+  xlab("Taxes") +
+  ylab("Frequency");
+```
+#15. Select the categorical variable Quadrant.
+#a. Draw Pareto chart.
+```{r}
+library(forcats)
+ggplot(housing_data, aes(x=fct_infreq(Quadrant))) +geom_bar()+
+  ggtitle("Histogram of House Prices") +
+  xlab("Price") +
+  ylab("Frequency");
+```
+
+#16. For both the quantitative variables used in question 14.
+#a. Determine the mean and median.
+#b. Compute the standard deviation of both variables.
+#c. Compute five number summary for both the variables.
+#d. Draw boxplots. 
+```{r}
+#Solution for question a:
+# Mean and median for price
+mean_price <- mean(housing_data$price, na.rm = TRUE)
+median_price <- median(housing_data$price, na.rm = TRUE)
+print(paste("Mean for price: ",mean_price, "Median for price: ", median_price))
+
+# Mean and median for Taxes
+mean_taxes <- mean(housing_data$Taxes, na.rm = TRUE)
+median_taxes <- median(housing_data$Taxes, na.rm = TRUE)
+print(paste("Mean for taxes: ",mean_taxes, "Median for taxes: ", median_taxes))
+
+
+
+#Solution for question b:
+sd_price <- sd(housing_data$price, na.rm = TRUE)
+sd_taxes <- sd(housing_data$Taxes, na.rm = TRUE)
+print(paste("Standard Deviation of price: ",sd_price, "Standard Deviation of price: ", sd_taxes))
+
+
+
+#Solution for question c:
+summary_price <- summary(housing_data$price)
+summary_taxes <- summary(housing_data$Taxes)
+print(paste("Summary of housing price: ",summary_price, "Summary of housing taxes: ", summary_taxes))
+
+
+
+#Solution for question d:
+# Boxplot for prices
+ggplot(housing_data, aes(y = price)) +
+  geom_boxplot(fill = "red") +
+  ggtitle("Boxplot of House Prices") +
+  ylab("Price")
+
+# Boxplot for taxes
+ggplot(housing_data, aes(y = Taxes)) +
+  geom_boxplot(fill = "blue") +
+  ggtitle("Boxplot of House Taxes") +
+  ylab("Taxes")
+
+```
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

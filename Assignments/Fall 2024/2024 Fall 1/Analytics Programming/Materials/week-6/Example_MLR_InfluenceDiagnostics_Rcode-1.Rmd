@@ -1,0 +1,49 @@
+---
+title: "Example MLR Influence Diagnosticcs"
+author: "Singh"
+
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Example bodyfat data
+
+```{r}
+library(readxl)
+bodyfatdat <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week6/bodyfat_data.xlsx")
+View(bodyfatdat)
+head(bodyfatdat)
+```
+
+## Regression Coefficients
+
+```{r}
+library(api2lm)
+
+output_1 <- lm(bodyfat~triceps+thigh + midarm, bodyfatdat)
+summary(output_1)
+anova(output_1)
+
+
+
+```
+## Leverage
+
+```{r}
+library(api2lm)
+library(stats)
+
+output_1 <- lm(bodyfat~triceps+thigh + midarm, bodyfatdat)
+
+influence.measures(output_1)
+influence_plot(output_1)
+plot(output_1, which = 4)
+plot(output_1, which = 5)
+
+```
+

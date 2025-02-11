@@ -1,0 +1,183 @@
+---
+title: "week-5"
+author: "Rupa Shrestha"
+date: "2024-09-26"
+output: word_document
+Student ID: 4266261
+---
+
+```{r}
+library(readxl)
+data_set <- read_excel("D:/Webster University/Assignments/Analytics Programming/week-5/Data_HW5.xlsx")
+```
+1) a) Obtain the scatter plot matrix and the correlation matrix. What information do these diagnostic aids provide here?
+```{r}
+#SOLUTION
+library(ggplot2)
+pairs(data_set)
+cor(data_set)
+
+# The plot shows the relationship between the dependent variable (Y) and the sum of two independent variables (X1 + X2). The points in the plot suggest a positive correlation between brand liking(Y) and with moisture content(X1) and sweetness (X2), meaning that as X1 + X2 increases, Y tends to increase as well. 
+```
+b. Fit the regression model to the data. State the estimated regression function. Interpret b1.
+```{r}
+#SOLUTION
+# Fit the regression model
+model <- lm(Y ~ X1 + X2, data = data_set)
+
+# Display the summary of the model
+summary(model)
+
+# Extract coefficients
+intercept <- coef(model)[1]
+b1 <- coef(model)[2]
+b2 <- coef(model)[3]
+
+# Estimated regression function
+#Y=β0+β1⋅X1+β2⋅X
+print(paste("Estimated regression function: Y =", intercept, "+", b1, "* X1 +", b2, "* X2"))
+
+# Interpret b1
+print(paste("Interpretation of b1: For a one unit increase in X1, Y is expected to increase by", b1, "units, holding X2 constant."))
+
+#The coefficient b1 represents the change in the degree of brand liking Y for each one-unit increase in moisture content X1, holding sweetness X2 constant
+#For example, if b1 =3, it means that for every additional unit of moisture (assuming X1 increases by 1), the brand liking score Y increases by 3 points, regardless of the sweetness level X2.
+```
+c) Obtain the residuals and prepare boxplot. What information does it provide?
+```{r}
+#SOLUTION
+residuals <- model$residuals
+anova(model)
+boxplot(residuals, main = "Residuals Boxplot", ylab = "Residuals")
+
+# The boxplot shows the distribution of the residuals. The residuals are centered around zero and the spread is relatively small, suggesting a good model fit. There are a few outliers.
+```
+d) Plot the residuals against the fitted values, X1 and X2. Interpret them.
+```{r}
+#SOLUTION
+# Plot residuals against fitted values
+fitted_value <- model$fitted.values
+X1 <- data_set$X1
+X2 <- data_set$X2
+
+plot(fitted_value, residuals, main="Residuals vs Fitted Values")
+abline(h=0, col="red")
+## Residuals vs Fitted Values: Residuals are randomly scattered around zero, suggesting no issues with the model's predictions across different fitted values.
+
+# Plot residuals vs X1
+plot(X1, residuals, main = "Residuals vs X1", xlab = "X1", ylab = "Residuals")
+abline(h = 0, col = "blue")
+## Residuals vs X1: Shows residuals scattered around zero with no clear pattern, indicating a good fit between X1 and the model.
+
+# Plot residuals vs X2
+plot(X2, residuals, main = "Residuals vs X2", xlab = "X2", ylab = "Residuals")
+abline(h = 0, col = "green")
+## Residuals vs X2: Shows residuals plotted against X2. The residuals are scattered randomly around zero, suggesting a good model fit.
+```
+e) Prepare a normal probability plot of the residuals and obtain the test statistics. State the results.
+```{r}
+#SOLUTION
+#Normality Probability plot
+plot(model)
+qqnorm(residuals)
+qqline(residuals, col = "red")
+## The points fall along the diagonal line, the residuals are normally distributed.
+
+# Shapiro-Wilk test for normality
+shapiro_test <- shapiro.test(residuals)
+shapiro_test
+## Since p-value is greater than defalut value(0.05), so we fail to reject the null hypothesis. This indicates tha the residuals residuals do not significantly deviate from normality.
+```
+f) Test whether there is a regression relation, using α = .01. State the alternatives, decision rule, and conclusion. What does your test imply about β1 and β2?
+```{r}
+#SOLUTION
+anova_result <- anova(model)
+anova_result
+
+```
+```{r}
+## Null Hypothesis (H0): There is no linear relationship between X1, X2, and Y (i.e., b1 = 0 and b2 = 0).
+
+##Alternative Hypothesis (H1): At least one of X1 or X2 has a significant linear relationship with Y (i.e., at least one of b1 or b2 is not equal to 0).
+
+##Decision Rule: Reject the null hypothesis if the p-value for either X1 or X2 is less than the significance level of 0.01.
+
+##Conclusion: The p-values for both variables are significantly below 0.01, leading to the rejection of the null hypothesis. This indicates strong statistical evidence of a linear relationship with Y.
+
+##Implications of b1 and b2: Both coefficients, b1 and b2, are significantly different from zero, indicating that X1 and X2 play a crucial role in predicting Y. Thus, both independent variables are important and should be included in the model.
+```
+
+g) Calculate the coefficient of multiple determination R2. How is it interpreted here?
+```{r}
+# SOLUTION
+R_squared <- summary(model)$r.squared
+print(paste("R² =", R_squared))
+```
+```{r}
+## The high R-squared value indicates that 95.21% of the variability in Y can be accounted for by the independent variables X1 and X2.
+## It indicates that the model explains substantial amount of the variance in brand liking, highlighting the effectiveness of moisture content and sweetness as predictors in regression model.
+```
+
+h) Obtain an interval estimate of E {Yx0} when X10 = 5 and X20 = 4. Use a 99 percent confidence coefficient. Interpret your interval estimate.
+```{r}
+#SOLUTION
+# New data for prediction
+new_data <- data.frame(X1 = 5, X2 = 4)
+
+# 99% confidence interval
+predict(model, newdata = new_data, interval = "confidence", level = 0.99)
+
+```
+```{r}
+## The confidence inverval shows that for a product with moisture content of 5 and sweetness of 4, we can be 99% confident that the average degree of brand liking will be between apporx. 73.88 and 80.67. It helps to understand customer prefernce based on product characteristics.
+```
+
+i) Obtain a prediction interval for a new observation Y0(new) when X10 = 5 and X20. Use a 99 percent confidence coefficient.
+```{r}
+#SOLUTION
+# Prediction interval
+prediction_interval <- predict(model, newdata = new_data, interval = "prediction", level = 0.99)
+print(prediction_interval)
+```
+```{r}
+# We can be 99% confident that a new data of brand liking for a product with moisture content of 5 and sweetness of 4 will fall between 68.481 and 86.069.
+```
+
+2) The lengths of pregnancies in a small rural village are normally distributed with a mean of 265 days and a standard deviation of 15 days.
+a. In what range would you expect to find the middle 50% of most pregnancies?
+b. What proportion of pregnancies will be more than 275 days?
+```{r}
+# SOLUTION:
+
+mean_pregnancy <- 265
+sd_pregnancy <- 15
+
+# a. Middle 50% (Q1 and Q3)
+q1 <- qnorm(0.25, mean = mean_pregnancy, sd = sd_pregnancy)
+q2 <- qnorm(0.75, mean=mean_pregnancy, sd=sd_pregnancy)
+print(paste("Middle 50% range of pregnancies: ",q1 , q2))
+
+# b. Proportion of pregnancies > 275 days
+prob_more_275 <- 1-pnorm(275,mean = mean_pregnancy,sd=sd_pregnancy)
+print(paste("Proportion of pregnancies more than 275 days: ", prob_more_275))
+
+
+```
+3) A certain car model has a mean gas mileage of 34 miles per gallon (mpg) with a standard deviation 5mpg. If a car is selected at random,
+a) What is the probability that the mileage of the selected car is greater than 33 mpg?
+b) What is the probability that the mileage of the car is between 33mpg and 35mpg?
+```{r}
+#SOLUTION
+  
+mean_gas_mileage <- 34
+mileage_sd <-5
+
+#a selected car mileage is greater than 33 mpg
+prob_mileage_greater_than_33 <- 1-pnorm(33,mean=mean_gas_mileage,sd=mileage_sd)
+print(paste("Probability that the mileage os selected car is greater than 33 mpg: ", prob_mileage_greater_than_33))
+
+#b mileage of the car is between 33mpg and 35 mpg
+prob_mileage_btn_33_35 <- pnorm(35, mean=mean_gas_mileage, sd=mileage_sd) - pnorm(33, mean=mean_gas_mileage, sd=mileage_sd)
+print(paste("Probability of mileage between 33 and 35 is: ", prob_mileage_btn_33_35))
+
+```

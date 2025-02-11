@@ -1,0 +1,111 @@
+---
+title: "Example_1 Logistic Regression"
+author: "Singh"
+
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Example 1 Logistic Regression
+```{r}
+library(readxl)
+chddat <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week6/logistic regression/chdage.xlsx")
+View(chddat)
+head(chddat)
+```
+
+## Regression Coefficients
+
+```{r}
+library(api2lm)
+library(aod)
+
+output_LR1 <- glm(CHD~Age,family=binomial, chddat)
+summary(output_LR1)
+
+##confidence Interval
+confint.default(output_LR1)
+
+##odds ratio
+exp(coef(output_LR1))
+
+## odds ratios and 95% CI
+exp(cbind(OR = coef(output_LR1), confint(output_LR1)))
+
+
+
+```
+
+## PLot
+```{r}
+attach(chddat)
+x <- seq(20,69,1)
+y <- 1/(1+exp(-1*(output_LR1$coeff[1] + output_LR1$coeff[2]*x)))
+plot(Age, CHD,ylab="Probability of evidence of CHD",xlab="Age")
+lines(x,y)
+```
+
+## Fitted Values
+```{r}
+library(ggplot2)
+
+pihat <- output_LR1$fitted.values
+odds_ratio <- output_LR1$fitted.values/(1-output_LR1$fitted.values)
+pred <- predict(output_LR1, newdata = chddat, type = "response")
+
+cbind(Age,round(pred,3),round(pihat,3),round(odds_ratio,3))
+
+## confidence interval for fitted values
+pred1 <- predict(output_LR1, newdata = chddat, type = "response", se.fit=TRUE)
+predm <- pred1$fit
+predu <- pred1$fit + pred1$se.fit * 1.96
+predl <- pred1$fit - pred1$se.fit * 1.96
+cbind(Age, pred1$se.fit, round(predl,3), round(predm,3), round(predu,3))
+
+## plot
+plot(Age, CHD,ylab="Probability of evidence of CHD",xlab="Age")
+lines(Age,predm)
+lines(Age, predl, col ="red")
+lines(Age, predu, col="red")
+
+```
+
+## Pvalues Chi-square
+```{r}
+
+pchisq(output_LR1$deviance,output_LR1$df.residual,lower=FALSE)
+```
+
+##Value of the difference in devinace and associated p-value
+```{r}
+output_LR1$null.deviance-output_LR1$deviance
+pchisq(output_LR1$null.deviance-output_LR1$deviance,1,lower=FALSE)
+```
+
+## Pearson chi-square
+```{r}
+print(paste("Pearson's X^2 =",round(sum(residuals(output_LR1,type="pearson")^2),3)))
+```
+
+##Residuals
+```{r}
+cbind(round(residuals(output_LR1,"response"),3),round(residuals(output_LR1,"pearson"),3),round(residuals(output_LR1,"deviance"),3))
+
+```
+
+##Residual Plots
+```{r}
+hvalues <- influence(output_LR1)$hat
+stanresDeviance <- residuals(output_LR1)/sqrt(1-hvalues)
+stanresPearson <- residuals(output_LR1,"pearson")/sqrt(1-hvalues)
+par(mfrow=c(1,2))
+plot(Age,stanresDeviance,ylab="Standardized Deviance Residuals",xlab="Age",ylim=c(-2,2))
+plot(Age,stanresPearson,ylab="Standardized Pearson Residuals",xlab="Age",ylim=c(-2,2))
+
+```
+

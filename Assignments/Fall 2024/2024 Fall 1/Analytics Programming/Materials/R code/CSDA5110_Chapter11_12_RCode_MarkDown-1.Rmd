@@ -1,0 +1,203 @@
+---
+title: "Chapter 11 & 12 Example"
+output: word_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Reading Data
+
+```{r }
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+library(readxl)
+data_seatbelt <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Data/SeatBelt_data.xlsx")
+View(data_seatbelt)
+head(data_seatbelt)
+
+```
+
+## String function
+
+
+```{r }
+str(data_seatbelt)
+str(data_seatbelt, strict.width ="cut")
+data_seatbelt %>% str(strict.width = "cut")
+
+
+```
+
+## Functions
+
+```{r}
+
+length(data_seatbelt)
+unique(data_seatbelt)
+unique(data_seatbelt$Region)
+length(unique(data_seatbelt$Region))
+data_seatbelt$Region %>% unique() %>% length()
+
+
+```
+
+
+## Using the Apply() Family of Function
+
+# The apply() function takes three arguments
+# apply(X, MARGIN, FUN)
+# x: an array or matrix
+# MARGIN = 1: the manipulation is performed on rows
+# MARGIN = 2: the manipulation is performed on columns, 
+# MARGIN = c(1,2): the manipulation is performed on rows and columns
+# FUN: tells which function to apply. Built functions like mean, median, sum, min, max and even user-defined functions can be applied
+
+
+```{r}
+class(data_seatbelt)
+dim(data_seatbelt)
+apply(data_seatbelt[,c(5,6)], 2 , median)
+
+```
+
+## Creating a matrix of numbers 1 through 10 with 5 rows and 5 columns
+```{r}
+m1 <- matrix(C<-(1:10),nrow=5, ncol=6)
+m1
+```
+
+## using the apply() function to sum the matrices over all the rows
+```{r}
+rowsum_m1 <- apply(m1, 1, sum)
+rowsum_m1
+
+```
+
+## using the apply() function to sum the matrices over all the columns
+```{r}
+colsum_m1 <- apply(m1, 2, sum)
+colsum_m1
+
+```
+## Use lapply() to apply a function to a list
+
+# first we create a list f movies
+# Now we use the lapply() to convert the upper case to lower case by specifying the tolower function as the 2nd argument for lapply()\
+# use the str() function to see each element
+```{r}
+movies <- c("SPIDERMAN","BATMAN","VERTIGO","CHINATOWN")
+movies_lower <-lapply(movies, tolower)
+str(movies_lower)
+```
+
+## Using the built in R data set "cars" we can see how lapply() and sapply() would work
+# first we specify the min speed and stopping distance of the cars from the dataset using the min function as the 2nd argument
+```{r}
+data("cars")
+dt <- cars
+lmn_cars <- lapply(dt, min) # returns the results as a list
+smn_cars <- sapply(dt, min) # returns the results as a vector
+
+lmn_cars
+class(lmn_cars)
+smn_cars
+class(smn_cars)
+
+```
+
+## Now we calculate the max speed and stopping distances of the cars
+```{r}
+lmxcars <- lapply(dt, max) # returns the results as a list
+smxcars <- sapply(dt, mean)
+
+lmn_cars
+class(lmn_cars)
+smxcars
+class(smxcars)
+
+```
+## Now we create a function that calculates the average speed and stopping distances of the cars
+```{r}
+avg <- function(x) {  
+  ( min(x) + max(x) ) / 2}
+fcars <- sapply(dt, avg)
+fcars
+
+```
+## Using Aggregate()
+##Load the internal dataset chickwts that contains the weight and type of feed of a sample of chickens and assign it to a variable df.chic
+```{r}
+data("chickwts")
+df.chic <- chickwts
+head(df.chic)
+
+names(df.chic)
+
+dim(df.chic)
+
+summary(df.chic)
+```
+## find the mean value for weight when grouped by feed using aggregate()
+```{r}
+group_mean <- aggregate(weight ~ feed, data = df.chic, mean)
+
+# find the mean 
+group_mean
+
+# We can apply column manipulations by using the colnames() function and assign meaningful column names
+colnames(group_mean) <- c("Group","Mean")
+group_mean
+```
+##  use aggregate with more than one variable
+```{r}
+df.chickweight <- ChickWeight
+names(ChickWeight)
+
+aggregate(weight ~ Time + Diet, data = df.chickweight, mean)
+```
+## Aggregating with DPLYR
+
+```{r}
+# Find the mean weight depending on diet
+group_by(df.chickweight, Diet) %>% summarise(mean = mean(weight))
+
+# Aggregating the mean weight depending on Diet
+group_by(df.chickweight, Time) %>% summarise(mean = mean(weight))
+
+# Aggregating two variables
+group_by(df.chickweight, Diet, Time) %>% summarise(mean = mean(weight))
+
+# Aggregating on calculating two summaries
+# Using aggregate
+aggregate(weight ~ Diet, data = df.chickweight, FUN = function(x) c(mean = mean(x), n = length(x)))
+
+# Using DPLYR
+group_by(df.chickweight, Diet) %>% summarise(mean = mean(weight), n = length(weight))
+
+
+# Aggregating on a subset of data 
+# Using aggregate()
+# The subset() function allows you to subset your data using logical operators
+aggregate(weight ~ Diet, data = subset(df.chickweight, Diet!=2), mean)
+
+# Using DPLYR
+df.chickweight %>%
+  filter(Diet != 1) %>%
+  group_by(Diet) %>%
+  summarise(mean = mean(weight))
+
+# Using DPLYR to chain different functions using verbs
+df.chickweight %>%
+  filter(Diet != 1) %>%
+  group_by(Diet) %>%
+  summarise(mean = mean(weight)) %>%
+  arrange(mean) # arrange() sorts from lowest to highest 
+
+subset(df.chickweight, Diet == 1)
+```
+

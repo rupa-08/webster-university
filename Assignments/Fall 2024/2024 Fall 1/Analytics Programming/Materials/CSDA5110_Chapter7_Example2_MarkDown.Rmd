@@ -1,0 +1,159 @@
+---
+title: "Chapter 7 Example 2"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Reading Data
+
+```{r }
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+library(readxl)
+data_seatbelt <- read_excel("C:/Users/Pradeep Singh/OneDrive - Southeast Missouri State University/Teaching/Fall2024/CSDA5110/Fall_01/Data/SeatBelt_data.xlsx")
+View(data_seatbelt)
+head(data_seatbelt)
+
+```
+
+## Scatterplot
+
+
+```{r }
+ggplot(data = data_seatbelt, mapping = aes(x = Uninsured_Drivers, 
+        y = Avg_Prem_Fluctuation_Creditscore) ) + geom_point()
+
+```
+
+##Scatterplot identifying Regions
+
+```{r}
+
+ggplot(data = data_seatbelt, mapping = aes(x = Uninsured_Drivers, 
+                                           y = Avg_Prem_Fluctuation_Creditscore, color=Region) ) + geom_point()
+
+```
+
+## Scatterplot with trendline for each region
+```{r}
+
+ggplot(data = data_seatbelt, mapping = aes(x = Uninsured_Drivers, 
+                  y = Prem_Fluctuation_CreditScore, color=Region) ) + geom_point() + geom_smooth(method = "lm")
+
+```
+
+##Scatterplot with single trendline
+```{r}
+
+ggplot(data = data_seatbelt, mapping = aes(x = Uninsured_Drivers, 
+                                           y = Prem_Fluctuation_CreditScore) ) +
+  geom_point(mapping = aes(color = Region)) +
+  geom_smooth(method = "lm")
+
+```
+
+##Scatterplot with single trendline and regions identified by shape and color
+```{r}
+
+ggplot(data = data_seatbelt, mapping = aes(x = Uninsured_Drivers, 
+                                           y = Avg_Prem_Fluctuation_Creditscore) ) +
+  geom_point(mapping = aes(color = Region, shape=Region)) +
+  geom_smooth(method = "lm")
+
+```
+
+##Scatterplot with labels
+```{r}
+
+ggplot(data = data_seatbelt, mapping = aes(x = Uninsured_Drivers, 
+                                           y = Prem_Fluctuation_CreditScore) ) +
+  geom_point(mapping = aes(color = Region, shape=Region)) +
+  geom_smooth(method = "lm") +
+  labs(   title = "Uninsured drivers vs Premium Fluctuation",
+          subtitle = "Dimensions for Regions",
+          x = "Uninsured drivers", y = "Premium Fluctuation",
+          color = "Region", shape = "Region"
+  ) +
+  scale_color_colorblind()
+
+```
+
+##BarGraph
+```{r}
+ggplot(data_seatbelt, aes(x = Region)) +
+  geom_bar()
+
+
+```
+
+##Bargraph - Pareto Chart
+```{r}
+
+ggplot(data_seatbelt, aes(x = fct_infreq(Region))) +
+  geom_bar()
+
+```
+
+##Histogram
+
+```{r}
+
+ggplot(data_seatbelt, aes(x =Uninsured_Drivers )) +
+  geom_histogram(binwidth = 10)
+
+ggplot(data_seatbelt, aes(x =Avg_Prem_Fluctuation_Creditscore )) +
+  geom_histogram(binwidth = 10)
+
+```
+
+##Density Plot
+```{r}
+
+ggplot(data_seatbelt, aes(x =Uninsured_Drivers)) +
+  geom_density()
+
+```
+
+##Boxplot
+```{r}
+
+ggplot(data_seatbelt, aes(x = Region, y = Uninsured_Drivers)) +
+  geom_boxplot()
+
+```
+
+##Density plots for each region for uninsured drivers
+```{r}
+
+ggplot(data_seatbelt, aes(x = Uninsured_Drivers, color = Region)) +
+  geom_density(linewidth = 0.75)
+
+```
+
+##Summary Statistics
+```{r}
+
+median(data_seatbelt$Uninsured_Drivers)
+mean(data_seatbelt$Uninsured_Drivers)
+fivenum(data_seatbelt$Uninsured_Drivers)
+var(data_seatbelt$Uninsured_Drivers)
+sd(data_seatbelt$Uninsured_Drivers)
+
+```
+
+##Summary statistics for each level of categorical variable (Region)
+```{r}
+
+data_seatbelt %>% group_by(Region)  %>%
+  summarise(mean_uninsured = mean(Uninsured_Drivers), std_dev_unsured= sd(Uninsured_Drivers),
+            median_uninsured = median(Uninsured_Drivers),min_uninsured=min(Uninsured_Drivers),
+            Q1=quantile(Uninsured_Drivers,probs=.25), Q3 =quantile(Uninsured_Drivers, probs=.75),
+            max_uninsured=max(Uninsured_Drivers))
+
+```
+

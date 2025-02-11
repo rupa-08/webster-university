@@ -1,0 +1,145 @@
+---
+title: "Chapter 9&10"
+output: word_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Example1 of the IfElse Statement
+```{r}
+checkNum.Function <- function(num)
+{
+  if (is.numeric(num))
+  {
+    print(sprintf("%s is a numeric value",num))
+  }else
+    print(sprintf("%s is not a numeric value",num))
+}
+
+checkNum.Function(11)
+checkNum.Function("12.5")
+
+```
+## Example2 of the IfElse Statement
+```{r}
+get_grade <- function(score)
+{
+  if (score > 70) {
+  Grade <- "Satisfactory"
+  } else 
+
+ {
+  Grade <- "UnSatisfasctory"
+ }
+  return(Grade)
+}
+get_grade(70.1)
+
+```
+## Example3 of the IfElse Statement
+```{r}
+get_GPA <- function(Result, Grade)
+{
+  if (Result == "Pass") 
+  {
+  if (Grade == "A") {
+    GPA <- 4
+  } else if (Grade == "B") {
+    GPA <- 3
+  }
+} else {
+  GPA <- 0
+}
+  return(GPA)
+}
+get_GPA("goal", "C")
+
+```
+## Example of the Switch Statement
+```{r}
+use.switch  <- function(x)
+{ 
+  switch(x,
+         "a"="first",
+         "b"="second",
+         "c"="last",
+         "d"="third",
+         "other") # this is the default argument
+}
+use.switch("a")
+use.switch("b")
+use.switch("c")
+use.switch("d")
+use.switch("e")
+
+```
+
+## Example of the ifelse statement
+
+```{r}
+newNum <- c(4,4,3,2,NA)
+ifelse(newNum == 4,"Yes","NO")
+newNum <- c(4,4,3,2,NA)
+ifelse(newNum == 2,"Yes","NO")
+
+```
+## Example of a for loop
+```{r}
+myCars <- c("Mustang", "Corvette", "Bently", "Porsche","Maybach", "Ferrari")
+
+# make a variable to hold their lengths with NA's using the rep() function to
+# replicate the NA values in myCars into myCarsLength to show NA in each element
+
+myCarsLength <- rep(NA,length(myCars))
+myCarsLength
+
+# Use the names() function to assign the car names to the elements in myCarsLength
+names(myCarsLength) <- myCars
+names(myCarsLength) <- myCars
+
+# Loop through assigning the length of the characters of the car names to each element
+for (i in myCars)
+{
+  myCarsLength[i] <- nchar(i)
+}
+myCarsLength
+
+```
+
+## Example of a while loop
+```{r}
+x  <- 21
+while(x <= 49)
+{
+  print(x)
+  x <- x + 1
+}
+
+# Using the next statement to skip over an iteration 
+x  <- 21
+while(x <= 49)
+{
+  x <- x + 1
+  
+  if (x == 32) 
+  {
+    next() # Skips over number 32 in the iteration
+  } 
+  print(x)
+}
+
+# Using the break statement to break out of a loop
+for(i in 1:10)
+{
+  if(i == 4)
+  {
+    break
+  }
+  print(i)
+}
+
+```
+

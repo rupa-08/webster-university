@@ -1,0 +1,98 @@
+---
+title: "Probability Distributions"
+output: word_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Find Probabilities for Normal Distribution
+###Blood Pressure Example
+### Probability to the left
+
+
+```{r }
+library(stats)
+Prob_X_less_than_100<-pnorm(100,120,20)
+Prob_X_less_than_100
+
+Prob_X_less_greater_133<- 1- pnorm(133,120,20)
+Prob_X_less_greater_133
+
+prob_between_100_133 <- (pnorm(133,120,20) - pnorm(100,120,20))
+prob_between_100_133
+
+```
+
+## Finding X given area to the left
+
+
+
+```{r}
+
+Q1 <- qnorm(0.25, mean = 120, sd = 20)
+Q1
+
+```
+## Finding X given area to the right
+
+```{r}
+X1 <- qnorm(0.90, mean = 120, sd = 20)
+X1
+```
+## Find Probabilities for t- Distribution
+
+```{r}
+Prob_X_less_than_2<-pt(2,14)
+Prob_X_less_than_2                     
+```
+## Find the value of t, when area to the right is given
+```{r}
+t1 <- qt(0.95, 14)
+t1
+```
+
+## Binomial Distribution
+Professor Example
+```{r}
+# P(X=6)
+part1 <- dbinom(x=6,size=10, prob =.45)
+part1
+
+#P(X=0)
+part2 <- dbinom(x=0,size=10, prob =.45)
+part2
+
+#P(X>=3)
+part3 <- 1 - pbinom(q=2,size=10, prob =.45)
+part3
+
+```
+## Teenage part-time job example
+```{r}
+#P(X>=3)
+part4 <- 1 - pbinom(q=2,size=5, prob =.30)
+part4
+```
+## Poisson Distribution
+Typographical Error Example
+```{r}
+part5 <- dpois(x=3,lambda=.4)
+part5
+```
+## McDonald's Example
+```{r}
+#P(X=6)
+part6 <- dpois(x=6,lambda=10)
+part6
+
+#P(X< 6)
+part7 <- ppois(q=5,lambda=10)
+part7
+
+#P(X>=6)
+part8 <- 1- ppois(q=5,lambda=10)
+part8
+```

@@ -1,0 +1,220 @@
+---
+title: "Regression Examples"
+author: "Singh"
+
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r }
+library(readxl)
+Toluca_Example1 <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week5/Toluca.xlsx")
+View(Toluca_Example1)
+```
+
+## Scatter Plot
+
+
+
+```{r }
+library(ggplot2)
+ggplot(
+  data = Toluca_Example1,
+  mapping = aes(x = lotsize, y = workhrs)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+```
+
+## Summary Stats
+
+
+```{r}
+summary(Toluca_Example1)
+```
+## Regression Coefficients
+
+```{r}
+output.lm <- lm(workhrs ~ lotsize, Toluca_Example1)
+output.lm
+summary(output.lm)
+residuals(output.lm)
+fitted(output.lm)
+fitted.values(output.lm)
+
+```
+##t-value 
+
+
+##95% confidence intervals
+
+
+```{r}
+tval <- qt(1-0.05/2,23)
+tval
+round(confint(output.lm,level=0.95),3)
+
+```
+## Confidence and Prediction Intervals for complete data
+
+```{r}
+predict(output.lm, interval="confidence",level=0.95)
+predict(output.lm,interval="prediction",level=0.95)
+
+```
+## Confidence and Prediction Intervals for Specific data points
+
+
+```{r}
+predict(output.lm,newdata=data.frame(lotsize=c(35,45,50,65,100,110)),interval="confidence",level=0.95)
+predict(output.lm,newdata=data.frame(lotsize=c(35,45,50,65,100,110)),interval="prediction",level=0.95)
+
+```
+ ## ANOVA table
+ 
+```{r}
+anova(output.lm)
+
+```
+## Read Data Example 2
+(S.J. Sheather, A Modern Approach to Regression with R)
+
+```{r}
+library(readxl)
+anscombe <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week5/anscombe.xlsx")
+View(anscombe)
+```
+
+## Four Plots for four different pairs of data
+```{r}
+library(ggplot2)
+ggplot(
+  data = anscombe,
+  mapping = aes(x = x1, y = y1)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+ggplot(
+  data = anscombe,
+  mapping = aes(x = x2, y = y2)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+ggplot(
+  data = anscombe,
+  mapping = aes(x = x3, y = y3)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+ggplot(
+  data = anscombe,
+  mapping = aes(x = x4, y = y4)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+```
+
+##SLR for four pairs of data
+```{r}
+output1 <- lm(y1~x1, anscombe)
+summary(output1)
+
+output2 <- lm(y2~x2, anscombe)
+summary(output2)
+
+output3 <- lm(y3~x3, anscombe)
+summary(output3)
+
+output4 <- lm(y4~x4, anscombe)
+summary(output4)
+
+```
+
+## Residual plots
+```{r}
+ggplot(
+  data = output1,
+  mapping = aes(x = x1, y = output1$residuals)) +
+  geom_point()
+  
+
+ggplot(
+  data = output2,
+  mapping = aes(x = x2, y = output2$residuals)) +
+  geom_point() 
+  
+
+ggplot(
+  data = output3,
+  mapping = aes(x = x3, y = output3$residuals)) +
+  geom_point() 
+  
+
+ggplot(
+  data = output4,
+  mapping = aes(x = x4, y = output4$residuals)) +
+  geom_point() 
+
+```
+
+## Normal Probablity plot and other plots
+
+```{r}
+plot(output1)
+plot(output2)
+plot(output3)
+plot(output4)
+
+
+
+```
+## Multiple Linear Regression
+
+
+```{r }
+library(readxl)
+Ital_Restau <- read_excel("C:/Users/Pradeep Singh/Documents/Professional/CSDA5110/Fall_2024/Week5/nyc.xlsx")
+
+head(Ital_Restau)
+data_restau <-Ital_Restau[,c(-1,-2,-7)]
+data_restau
+
+```
+
+## MLR Estimation
+
+
+```{r }
+library(api2lm)
+output.lm <- lm(Price ~ Food+Decor+Service+East, Ital_Restau)
+output.lm
+anova(output.lm)
+summary(output.lm)
+
+```
+##Pairwise Correlation
+
+```{r}
+library(api2lm)
+library(lmSubsets)
+library(olsrr)
+library(car)
+ pairs( ~ Price+Food+Decor+Service+East, Ital_Restau)
+ cor(data_restau)
+
+
+```
+## ANOVA Table
+
+```{r}
+anova(output.lm)
+```
+
+
+
